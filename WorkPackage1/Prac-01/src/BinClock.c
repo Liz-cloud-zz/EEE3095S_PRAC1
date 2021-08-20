@@ -71,29 +71,29 @@ void initGPIO(void){
 	//Write your logic here
 	
 	//Button1
-//	pinMode(23, INPUT);
-//	pullUpControl(23,PUP_UP);
-//	wiringPiISR(23,INT_EDGE_RISING,&callback_function());
+	pinMode(23, INPUT);
+	pullUpControl(23,PUP_UP);
+	wiringPiISR(23,INT_EDGE_RISING,&callback_function());
 
        //button2
-//	pinMode(24,INPUT);
-//	pullUpControl(24,PUP_UP);
-//	wiringPiISR(24,INT_EDGE_RISING,&callback_function());
+	pinMode(24,INPUT);
+	pullUpControl(24,PUP_UP);
+	wiringPiISR(24,INT_EDGE_RISING,&callback_function());
 
-//	printf("BTNS done\n");
-//	printf("Setup done\n");
+	printf("BTNS done\n");
+	printf("Setup done\n");
 }
 
 
 //software debouncing
-//void callback_function(void){}
- //const long interruptTime = millis();
+void callback_function(void){}
+	const long interruptTime = millis();
    
-  //  if (interruptTime - lastInterruptTime>200){
-        // Perform your logic here      
-   // }
-   // lastInterruptTime = interruptTime;
-//}
+    if (interruptTime - lastInterruptTime>200){
+         Perform your logic here      
+   }
+    lastInterruptTime = interruptTime;
+}
 
 
 /*
@@ -127,12 +127,14 @@ int main(void){
 		//Write your logic here
 		if(digitalRead(BTNS[0]==0)){
 			digitalWrite(LED,LOW);
+			hourInc();
 		    printf("Button0 has been pressed!\n");
 		}else{
 			digitalWrite(LED,HIGH);
 		}
 		if(digitalRead(BTNS[1]==0)){
 			digitalWrite(LED,HIGH);
+			minInc();
 		    printf("Button1 has been pressed!\n");
 		}
 		else{
