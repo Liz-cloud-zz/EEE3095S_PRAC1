@@ -123,16 +123,21 @@ int main(void){
 		printf("The current time is: %d:%d:%d\n", hours, mins, secs);		
 		// TURN ON LED
 		digitalWrite(LED,HIGH);
+		printf("Written to the LED\n");
 		//Toggle Seconds LED
 		//Write your logic here
-
+		toggleTime();
+		digitalWrite(BTNS[0],LOW);
+		digitalWrite(BTNS[1],LOW);
 		// if button0 is pressed increment hours
-		if(digitalRead(BTNS[0]==0)){
+		if(digitalRead(BTNS[0])==1){
+			printf("in the first condition\n");
 			hourInc();
 		    printf("Button0 has been pressed!\n");
 		}
 		// if button1 is pressed increment minutes
-		if(digitalRead(BTNS[1]==0)){
+		if(digitalRead(BTNS[1])==1){
+			printf("in the second condition\n");
 			minInc();
 		    printf("Button1 has been pressed!\n");
 		}
@@ -152,7 +157,7 @@ int main(void){
 		
 		// fliker led every second
 		for(int seconds=0;seconds<5;seconds++){
-			delay(1000);
+			delay(100);
 			digitalWrite(LED,HIGH);
 		}
 	}
@@ -170,6 +175,7 @@ int hFormat(int hours){
 	else if (hours > 12){
 		hours -= 12;
 	}
+	printf("12 HOUR FORMAT:%d\n",hours);
 	return (int)hours;
 }
 
@@ -236,6 +242,7 @@ int decCompensation(int units){
  */
 void hourInc(void){
 	//Debounce
+	printf("Intial hours:%d\n",HH);
 	long interruptTime = millis();
 
 	if (interruptTime - lastInterruptTime>200){
@@ -243,7 +250,7 @@ void hourInc(void){
 		//Fetch RTC Time
 		//Increase hours by 1, ensuring not to overflow
 		//Write hours back to the RTC
-		if(BTNS[0]==1){
+		if(digitalRead(BTNS[0])==1){
 		    HH=HH+1;
 		    if(HH>23){
 		        HH=0;
@@ -251,6 +258,7 @@ void hourInc(void){
 		}
 	}
 	lastInterruptTime = interruptTime;
+	printf("Upadted hours:%d\n",HH);
 }
 
 /* 
@@ -260,6 +268,7 @@ void hourInc(void){
  * Software Debouncing should be used
  */
 void minInc(void){
+	printf("Intial minutes:%d\n", MM);
 	long interruptTime = millis();
 
 	if (interruptTime - lastInterruptTime>200){
@@ -268,7 +277,7 @@ void minInc(void){
 		//Increase minutes by 1, ensuring not to overflow
 		//Write minutes back to the RTC
 
-		if(BTNS[1]==1){
+		if(digitalRead(BTNS[1])==1){
 		    MM=MM+1;
 		    if(MM>59){
 		        HH=HH+1;
@@ -277,6 +286,7 @@ void minInc(void){
 		}
 	}
 	lastInterruptTime = interruptTime;
+	printf("Updated minutes:%d\n",MM);
 }
 
 //This interrupt will fetch current time from another script and write it to the clock registers
@@ -301,4 +311,5 @@ void toggleTime(void){
 
 	}
 	lastInterruptTime = interruptTime;
+	printf("Time: %d: %d: %d:\n",HH,MM,SS);
 }
