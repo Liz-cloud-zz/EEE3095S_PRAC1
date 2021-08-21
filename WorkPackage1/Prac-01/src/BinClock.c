@@ -33,7 +33,8 @@ void CleanUp(int sig){
 	//Set LED to low then input mode
 	//Logic here
 	pinMode(LED,OUTPUT);
-	digitalWrite(LED,0);
+	//TURN OFF  LED
+	digitalWrite(LED,LOW);
 
 	for (int j=0; j < sizeof(BTNS)/sizeof(BTNS[0]); j++) {
 		pinMode(BTNS[j],INPUT);
@@ -55,7 +56,7 @@ void initGPIO(void){
 
 	RTC = wiringPiI2CSetup(RTCAddr); //Set up the RTC
 	
-	//Set up the LED
+	//Set up the LED TO OUTPUT
 	//Write your Logic here
         pinMode(LED,OUTPUT);
 	
@@ -71,29 +72,28 @@ void initGPIO(void){
 	//Write your logic here
 	
 	//Button1
-	pinMode(23, INPUT);
-	pullUpControl(23,PUP_UP);
-	wiringPiISR(23,INT_EDGE_RISING,&callback_function());
+//	pinMode(23, INPUT);
+//	pullUpControl(23,PUP_UP);
+//	wiringPiISR(23,INT_EDGE_RISING,&callback_function());
 
        //button2
-	pinMode(24,INPUT);
-	pullUpControl(24,PUP_UP);
-	wiringPiISR(24,INT_EDGE_RISING,&callback_function());
+//	pinMode(24,INPUT);
+//	pullUpControl(24,PUP_UP);
+//	wiringPiISR(24,INT_EDGE_RISING,&callback_function());
 
 	printf("BTNS done\n");
 	printf("Setup done\n");
 }
 
-
 //software debouncing
-void callback_function(void){}
-	const long interruptTime = millis();
+//void callback_function(void){}
+//	 long interruptTime = millis();
    
-    if (interruptTime - lastInterruptTime>200){
-         Perform your logic here      
-   }
-    lastInterruptTime = interruptTime;
-}
+   // if (interruptTime - lastInterruptTime>200){
+              
+   //}
+  //  lastInterruptTime = interruptTime;
+//}
 
 
 /*
@@ -114,44 +114,47 @@ int main(void){
 	for (;;){
 		//Fetch the time from the RTC
 		//Write your logic here
-		digitalWrite(LED,HIGH);
 		//Time stored in RTC
-		hours=wiringPiI2CReadReg8(RTC,HOUR_REGISTER);
+		hours=hexCompensation(wiringPiI2CReadReg8(RTC,HOUR_REGISTER));
 		mins=hexCompensation(wiringPiI2CReadReg8(RTC,MIN_REGISTER));
 		secs =hexCompensation(wiringPiI2CReadReg8(RTC,SEC_REGISTER));
 		
 		//Print out time we have stored on our RTC
 		printf("The current time is: %d:%d:%d\n", hours, mins, secs);		
-
+		// TURN ON LED
+		digitalWrite(LED,HIGH);
 		//Toggle Seconds LED
 		//Write your logic here
+
+		// if button0 is pressed increment hours
 		if(digitalRead(BTNS[0]==0)){
-			digitalWrite(LED,LOW);
 			hourInc();
 		    printf("Button0 has been pressed!\n");
-		}else{
-			digitalWrite(LED,HIGH);
 		}
+		// if button1 is pressed increment minutes
 		if(digitalRead(BTNS[1]==0)){
-			digitalWrite(LED,HIGH);
 			minInc();
 		    printf("Button1 has been pressed!\n");
 		}
-		else{
-			digitalWrite(LED,LOW);
-		}
-
 
 		//using a delay to make our program "less CPU hungry"
 		delay(1000); //milliseconds
+		// if the seconds are greater than 59 increment the minutes 
+		// then set seconds to 0  
 		if(secs<59){
 			secs++;
 		}else{
-			secs=0x00;
-			MM+=1;
+			MM=MM+1;
+			secs=0;
 		}
+		// update seconds at RTC
 		wiringPiI2CWriteReg8(RTC,SEC_REGISTER,secs);
 		
+		// fliker led every second
+		for(int seconds=0;seconds<5;seconds++){
+			delay(1000);
+			digitalWrite(LED,HIGH);
+		}
 	}
 	return 0;
 }
@@ -240,13 +243,12 @@ void hourInc(void){
 		//Fetch RTC Time
 		//Increase hours by 1, ensuring not to overflow
 		//Write hours back to the RTC
-		if(BTNS[1]==1){
-		    HH+=1;
-		    if(HH>=24){
+		if(BTNS[0]==1){
+		    HH=HH+1;
+		    if(HH>23){
 		        HH=0;
 		    }
 		}
-
 	}
 	lastInterruptTime = interruptTime;
 }
@@ -266,11 +268,11 @@ void minInc(void){
 		//Increase minutes by 1, ensuring not to overflow
 		//Write minutes back to the RTC
 
-		if(BTNS[0]==1){
-		    MM+=1;
-		    if(MM>=60){
-		        MM=0;
-		        HH+=1;
+		if(BTNS[1]==1){
+		    MM=MM+1;
+		    if(MM>59){
+		        HH=HH+1;
+			MM=0;
 		    }
 		}
 	}
