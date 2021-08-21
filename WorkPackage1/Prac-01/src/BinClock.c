@@ -32,7 +32,7 @@ void CleanUp(int sig){
 
 	//Set LED to low then input mode
 	//Logic here
-	pinMode(LED,OUTPUT);
+	pinMode(LED,INPUT);
 	//TURN OFF  LED
 	digitalWrite(LED,LOW);
 
@@ -66,20 +66,22 @@ void initGPIO(void){
 	for(int j=0; j < sizeof(BTNS)/sizeof(BTNS[0]); j++){
 		pinMode(BTNS[j], INPUT);
 		pullUpDnControl(BTNS[j], PUD_UP);
+		
 	}
 	
+       
 	//Attach interrupts to Buttons
 	//Write your logic here
 	
 	//Button1
-//	pinMode(23, INPUT);
-//	pullUpControl(23,PUP_UP);
-//	wiringPiISR(23,INT_EDGE_RISING,&callback_function());
+	//pinMode(BTNS[0], INPUT);
+	//pullUpControl(BTNS[0],PUP_UP);
+	wiringPiISR(BTNS[0],INT_EDGE_BOTH,hourInc());
 
-       //button2
-//	pinMode(24,INPUT);
-//	pullUpControl(24,PUP_UP);
-//	wiringPiISR(24,INT_EDGE_RISING,&callback_function());
+        //button2
+	//pinMode(BTNS[1],INPUT);
+	//pullUpControl(BTNS[1],PUP_UP);
+	wiringPiISR(BTNS[1],INT_EDGE_BOTH,minInc());
 
 	printf("BTNS done\n");
 	printf("Setup done\n");
@@ -127,8 +129,10 @@ int main(void){
 		//Toggle Seconds LED
 		//Write your logic here
 		toggleTime();
-		digitalWrite(BTNS[0],LOW);
-		digitalWrite(BTNS[1],LOW);
+		
+		// initialize buttons
+		printf("Button0 value is %d\n", digitalRead(BTNS[0]));
+		printf("Button1 value is %d\n", digitalRead(BTNS[1]));
 		// if button0 is pressed increment hours
 		if(digitalRead(BTNS[0])==1){
 			printf("in the first condition\n");
