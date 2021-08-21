@@ -76,27 +76,16 @@ void initGPIO(void){
 	//Button1
 	//pinMode(BTNS[0], INPUT);
 	//pullUpControl(BTNS[0],PUP_UP);
-	wiringPiISR(BTNS[0],INT_EDGE_BOTH,hourInc());
+	wiringPiISR(BTNS[0],INT_EDGE_BOTH,hourInc);
 
         //button2
 	//pinMode(BTNS[1],INPUT);
 	//pullUpControl(BTNS[1],PUP_UP);
-	wiringPiISR(BTNS[1],INT_EDGE_BOTH,minInc());
+	wiringPiISR(BTNS[1],INT_EDGE_BOTH,minInc);
 
 	printf("BTNS done\n");
 	printf("Setup done\n");
 }
-
-//software debouncing
-//void callback_function(void){}
-//	 long interruptTime = millis();
-   
-   // if (interruptTime - lastInterruptTime>200){
-              
-   //}
-  //  lastInterruptTime = interruptTime;
-//}
-
 
 /*
  * The main function
@@ -158,12 +147,12 @@ int main(void){
 		}
 		// update seconds at RTC
 		wiringPiI2CWriteReg8(RTC,SEC_REGISTER,secs);
-		
+		digitalWrite(LED,LOW);
 		// fliker led every second
-		for(int seconds=0;seconds<5;seconds++){
-			delay(100);
-			digitalWrite(LED,HIGH);
-		}
+//		for(int seconds=0;seconds<5;seconds++){
+//			delay(100);
+//			digitalWrite(LED,HIGH);
+//		}
 	}
 	return 0;
 }
@@ -179,7 +168,7 @@ int hFormat(int hours){
 	else if (hours > 12){
 		hours -= 12;
 	}
-	printf("12 HOUR FORMAT:%d\n",hours);
+//	printf("12 HOUR FORMAT:%d\n",hours);
 	return (int)hours;
 }
 
@@ -246,7 +235,7 @@ int decCompensation(int units){
  */
 void hourInc(void){
 	//Debounce
-	printf("Intial hours:%d\n",HH);
+//	printf("Intial hours:%d\n",HH);
 	long interruptTime = millis();
 
 	if (interruptTime - lastInterruptTime>200){
@@ -262,7 +251,7 @@ void hourInc(void){
 		}
 	}
 	lastInterruptTime = interruptTime;
-	printf("Upadted hours:%d\n",HH);
+//	printf("Upadted hours:%d\n",HH);
 }
 
 /* 
@@ -272,7 +261,7 @@ void hourInc(void){
  * Software Debouncing should be used
  */
 void minInc(void){
-	printf("Intial minutes:%d\n", MM);
+//	printf("Intial minutes:%d\n", MM);
 	long interruptTime = millis();
 
 	if (interruptTime - lastInterruptTime>200){
@@ -290,7 +279,7 @@ void minInc(void){
 		}
 	}
 	lastInterruptTime = interruptTime;
-	printf("Updated minutes:%d\n",MM);
+//	printf("Updated minutes:%d\n",MM);
 }
 
 //This interrupt will fetch current time from another script and write it to the clock registers
